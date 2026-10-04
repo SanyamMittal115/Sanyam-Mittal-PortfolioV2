@@ -1,0 +1,27 @@
+name: Fix verified portfolio links
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fix-project-links.yml']
+permissions:
+  contents: write
+jobs:
+  fix-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace incorrect project URLs with verified repo deployment URLs
+        run: |
+          sed -i 's#https://resume-analysis-tool.vercel.app#https://resume-analysis-tool-opal.vercel.app#g' index.html
+          sed -i 's#https://calorie-tracker-three-beta.vercel.app#https://calorie-tracker-ihzfyigrm-sanyam-mittals-projects.vercel.app#g' index.html
+      - name: Commit corrected links
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Links already correct"
+          else
+            git commit -m "Point portfolio cards to verified Vercel deployments"
+            git push
+          fi
